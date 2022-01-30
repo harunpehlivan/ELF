@@ -51,7 +51,7 @@ class RNNActorCritic(object):
         ss = []
 
         # Forward to compute LSTM.
-        for t in range(0, T - 1):
+        for t in range(T - 1):
             if t > 0:
                 term = Variable(1.0 - batch["terminal"][t].float()).view(-1, 1)
                 h.register_hook(lambda grad: grad.mul(term))

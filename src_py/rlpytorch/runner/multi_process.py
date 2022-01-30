@@ -69,8 +69,7 @@ class MultiProcessRun(object):
         # Send to remote for remote processing.
         # TODO Might have issues when batch is on GPU.
         self.total_train_count += 1
-        success = self.shared_data.send_batch(batch)
-        if success:
+        if success := self.shared_data.send_batch(batch):
             self.success_train_count += 1
 
     def run(self):

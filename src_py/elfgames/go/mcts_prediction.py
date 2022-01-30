@@ -33,10 +33,9 @@ class MCTSPrediction(object):
     def update(self, mi, batch, stats, use_cooldown=False, cooldown_count=0):
         ''' Update given batch '''
         self.timer.restart()
-        if use_cooldown:
-            if cooldown_count == 0:
-                mi['model'].prepare_cooldown()
-                self.timer.record('prepare_cooldown')
+        if use_cooldown and cooldown_count == 0:
+            mi['model'].prepare_cooldown()
+            self.timer.record('prepare_cooldown')
 
         # Current timestep.
         state_curr = mi['model'](batch)

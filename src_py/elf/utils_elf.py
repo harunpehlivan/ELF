@@ -60,7 +60,7 @@ class Allocator(object):
     def spec2batches(ctx, batchsize, spec, gpu, use_numpy=False, num_recv=1):
         batch_spec = []
         name2idx = defaultdict(lambda: list())
-        idx2name = dict()
+        idx2name = {}
 
         for name, v in spec.items():
             print("%s: %s" % (name, v))
@@ -150,14 +150,13 @@ class Batch:
         '''
         if key in self.batch:
             return self.batch[key]
+        key_with_last = "last_" + key
+        if key_with_last in self.batch:
+            return self.batch[key_with_last][1:]
         else:
-            key_with_last = "last_" + key
-            if key_with_last in self.batch:
-                return self.batch[key_with_last][1:]
-            else:
-                raise KeyError(
-                    "Batch(): specified key: %s or %s not found!" %
-                    (key, key_with_last))
+            raise KeyError(
+                "Batch(): specified key: %s or %s not found!" %
+                (key, key_with_last))
 
     def add(self, key, value):
         '''Add key=value in Batch.
@@ -228,15 +227,14 @@ class Batch:
         if self.histdim is None:
             raise ValueError("No histdim information for the batch")
 
-        if key is None:
-            new_batch = self.empty_copy()
-            new_batch.batch = {
-                k: tensor_slice(v, self.histdim, hist_idx)
-                for k, v in self.batch.items()
-            }
-            return new_batch
-        else:
+        if key is not None:
             return tensor_slice(self[key], self.histdim, hist_idx)
+        new_batch = self.empty_copy()
+        new_batch.batch = {
+            k: tensor_slice(v, self.histdim, hist_idx)
+            for k, v in self.batch.items()
+        }
+        return new_batch
 
     def half(self):
         '''transfer batch data to fp16'''

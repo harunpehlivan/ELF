@@ -29,7 +29,7 @@ class EvalCount(object):
     def reset_on_new_model(self):
         self.reset()
         self.ids_exclude.update(self.ids.keys())
-        self.ids = dict()
+        self.ids = {}
 
     def feed(self, id, *args, **kwargs):
         # Game is running, not reaching terminal yet.

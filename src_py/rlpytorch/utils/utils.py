@@ -161,8 +161,7 @@ class DelayedStats:
         self.predicted_entries = [
             defaultdict(dict) for i in range(
                 self.max_delay)]
-        self.baseline_entries = [
-            defaultdict(dict) for i in range(
+        self.baseline_entries = [defaultdict(dict) for _ in range(
                 self.max_delay)]
 
     def feed(self, ts, ids, curr, pred_diff, curr_cb=None, diff_cb=None):
@@ -218,7 +217,7 @@ class DelayedStats:
         counter = 0
         # h1[t_id] -> val
         for t_id, v1 in h1.items():
-            if not (t_id in h2):
+            if t_id not in h2:
                 continue
             v2 = h2[t_id]
             summation += (v1 - v2) ** 2
@@ -254,7 +253,7 @@ def print_dict2(prompt, d1, d2, func=lambda x, y: str(x) + "_" + str(y)):
     print(prompt)
     items = []
     for k in sorted(d1.keys()):
-        if not (k in d2):
+        if k not in d2:
             continue
         v1 = d1[k]
         v2 = d2[k]
@@ -348,7 +347,7 @@ class ForwardTracker:
 
             for t in range(1, self.max_delay):
                 k_f = k + "_T" + str(t)
-                if not (k_f in fd_info):
+                if k_f not in fd_info:
                     continue
                 predictions = pred[t0 + t]
                 predictions["pred"][t] = fd_info[k_f] + v
@@ -427,13 +426,14 @@ class SeqStats:
             print(
                 "Distribution of %s [min = %d / max = %d / #count = %d]:" %
                 (self.name, self.min_seq, self.max_seq, total_counts))
-            s = ""
-            for r in sorted(self.stats_seq.keys(),
-                            key=lambda x: float(x.split(",")[0][1:])):
-                s += "%s: %d [%.2lf%%]\n" % (
-                    r,
-                    self.stats_seq[r],
-                    100.0 * self.stats_seq[r] / total_counts)
+            s = "".join(
+                "%s: %d [%.2lf%%]\n"
+                % (r, self.stats_seq[r], 100.0 * self.stats_seq[r] / total_counts)
+                for r in sorted(
+                    self.stats_seq.keys(), key=lambda x: float(x.split(",")[0][1:])
+                )
+            )
+
             print(s)
         else:
             print(
@@ -473,10 +473,7 @@ def print_binary(m):
     s = ""
     for i in range(m.size(0)):
         for j in range(m.size(2)):
-            if m[i, j] != 0:
-                s += "x"
-            else:
-                s += "."
+            s += "x" if m[i, j] != 0 else "."
         s += "\n"
     print(s)
 

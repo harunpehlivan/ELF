@@ -61,13 +61,10 @@ class Block(Model):
         if output_channel is None:
             output_channel = self.options.dim
 
-        layers = []
-        layers.append(nn.Conv2d(
-            input_channel,
-            output_channel,
-            kernel,
-            padding=(kernel // 2),
-        ))
+        layers = [
+            nn.Conv2d(input_channel, output_channel, kernel, padding=(kernel // 2))
+        ]
+
         if self.options.bn:
             layers.append(
                 nn.BatchNorm2d(output_channel,
@@ -101,9 +98,10 @@ class GoResNet(Model):
     @auto_import_options
     def __init__(self, option_map, params):
         super().__init__(option_map, params)
-        self.blocks = []
-        for _ in range(self.options.num_block):
-            self.blocks.append(Block(option_map, params))
+        self.blocks = [
+            Block(option_map, params) for _ in range(self.options.num_block)
+        ]
+
         self.resnet = nn.Sequential(*self.blocks)
 
     def forward(self, s):
@@ -201,12 +199,11 @@ class Model_PolicyValue(Model):
             self.init_conv.cuda(self.options.gpu)
             self.resnet.cuda(self.options.gpu)
 
-        if self.options.use_data_parallel:
-            if self.options.gpu is not None:
-                self.init_conv = nn.DataParallel(
-                    self.init_conv, output_device=self.options.gpu)
-                self.resnet = nn.DataParallel(
-                    self.resnet, output_device=self.options.gpu)
+        if self.options.use_data_parallel and self.options.gpu is not None:
+            self.init_conv = nn.DataParallel(
+                self.init_conv, output_device=self.options.gpu)
+            self.resnet = nn.DataParallel(
+                self.resnet, output_device=self.options.gpu)
 
         self._check_and_init_distributed_model()
 
@@ -257,13 +254,10 @@ class Model_PolicyValue(Model):
         if output_channel is None:
             output_channel = self.options.dim
 
-        layers = []
-        layers.append(nn.Conv2d(
-            input_channel,
-            output_channel,
-            kernel,
-            padding=(kernel // 2)
-        ))
+        layers = [
+            nn.Conv2d(input_channel, output_channel, kernel, padding=(kernel // 2))
+        ]
+
         if self.options.bn:
             layers.append(
                 nn.BatchNorm2d(output_channel,

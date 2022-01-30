@@ -279,13 +279,12 @@ class Loader(object):
 
         if self.options.server_addr:
             opt.server_addr = self.options.server_addr
+        elif self.options.server_id:
+            opt.server_addr = addrs[self.options.server_id]
+            opt.server_id = self.options.server_id
         else:
-            if self.options.server_id:
-                opt.server_addr = addrs[self.options.server_id]
-                opt.server_id = self.options.server_id
-            else:
-                opt.server_addr = ""
-                opt.server_id = ""
+            opt.server_addr = ""
+            opt.server_id = ""
 
         opt.port = self.options.port
         opt.mode = self.options.mode
@@ -400,8 +399,7 @@ class Loader(object):
                 input=["black_ver", "white_ver"],
                 reply=None
             )
-        elif self.options.mode == "train" or \
-                self.options.mode == "offline_train":
+        elif self.options.mode in ["train", "offline_train"]:
             desc["train"] = dict(
                 input=["s", "offline_a", "winner", "mcts_scores", "move_idx",
                        "selfplay_ver"],

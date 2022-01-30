@@ -74,10 +74,12 @@ class Model_Policy(Model):
             s = conv_bn(self.relu(conv(s)))
 
         output = self.final_conv(s)
-        pis = []
         d = self.board_size * self.board_size
-        for i in range(self.num_future_actions):
-            pis.append(self.softmax(output[:, i].contiguous().view(-1, d)))
+        pis = [
+            self.softmax(output[:, i].contiguous().view(-1, d))
+            for i in range(self.num_future_actions)
+        ]
+
         return dict(pis=pis, pi=pis[0])
 
 

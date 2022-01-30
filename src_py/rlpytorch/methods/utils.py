@@ -36,7 +36,7 @@ def accumulate(acc, new):
     '''
     ret = {k: new[k] if a is None else a + new[k]
            for k, a in acc.items() if k in new}
-    ret.update({k: v for k, v in new.items() if not (k in acc)})
+    ret.update({k: v for k, v in new.items() if k not in acc})
     return ret
 
 
@@ -49,9 +49,8 @@ def add_err(overall_err, new_err):
     '''
     if overall_err is None:
         return new_err
-    else:
-        overall_err += new_err
-        return overall_err
+    overall_err += new_err
+    return overall_err
 
 
 def add_stats(stats, key, value):

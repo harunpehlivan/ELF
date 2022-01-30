@@ -85,13 +85,10 @@ class Model_PolicyValue(Model):
         if output_channel is None:
             output_channel = self.options.dim
 
-        layers = []
-        layers.append(nn.Conv2d(
-            input_channel,
-            output_channel,
-            kernel,
-            padding=(kernel // 2),
-        ))
+        layers = [
+            nn.Conv2d(input_channel, output_channel, kernel, padding=(kernel // 2))
+        ]
+
         if self.options.bn:
             layers.append(nn.BatchNorm2d(output_channel))
         if relu:

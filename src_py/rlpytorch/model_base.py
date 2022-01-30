@@ -98,7 +98,7 @@ class Model(nn.Module):
             'step': self.step,
             'options': vars(self.options),
         }
-        for i in range(num_trial):
+        for _ in range(num_trial):
             try:
                 torch.save(content, filename)
                 return

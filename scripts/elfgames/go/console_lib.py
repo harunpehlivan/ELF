@@ -33,10 +33,7 @@ def plot_plane(v):
     s = ""
     for j in range(v.size(1)):
         for i in range(v.size(0)):
-            if v[i, v.size(1) - 1 - j] != 0:
-                s += "o "
-            else:
-                s += ". "
+            s += "o " if v[i, v.size(1) - 1 - j] != 0 else ". "
         s += "\n"
     print(s)
 
@@ -92,8 +89,7 @@ class GoConsole:
             self.check_stats[-1] += 1
 
     def actor(self, batch):
-        reply = self.evaluator.actor(batch)
-        return reply
+        return self.evaluator.actor(batch)
 
     def showboard(self, batch):
         print(batch.GC.getGame(0).showBoard())
@@ -232,11 +228,10 @@ class GoConsoleGTP:
 
     def on_genmove(self, batch, items, reply):
         ret, msg = self.check_player(batch, items[1][0])
-        if ret:
-            reply["a"] = self.actions["skip"]
-            return True, reply
-        else:
+        if not ret:
             return False, msg
+        reply["a"] = self.actions["skip"]
+        return True, reply
 
     def on_play(self, batch, items, reply):
         ret, msg = self.check_player(batch, items[1][0])
@@ -299,8 +294,7 @@ class GoConsoleGTP:
         return x * self.board_size + y
 
     def actor(self, batch):
-        reply = self.evaluator.actor(batch)
-        return reply
+        return self.evaluator.actor(batch)
 
     def action2move(self, a):
         x = a // self.board_size
@@ -337,7 +331,7 @@ class GoConsoleGTP:
 
     def prompt(self, prompt_str, batch):
         # Show last command results.
-        if self.last_cmd == "play" or self.last_cmd == "clear_board":
+        if self.last_cmd in ["play", "clear_board"]:
             self.print_msg(True, "")
         elif self.last_cmd == "genmove":
             self.print_msg(True, self.get_last_move(batch))
@@ -359,13 +353,12 @@ class GoConsoleGTP:
                 self.last_cmd = c
                 if not ret:
                     self.print_msg(False, msg)
+                elif isinstance(msg, dict):
+                    return msg
+                elif isinstance(msg, str):
+                    self.print_msg(True, msg)
                 else:
-                    if isinstance(msg, dict):
-                        return msg
-                    elif isinstance(msg, str):
-                        self.print_msg(True, msg)
-                    else:
-                        self.print_msg(True, "")
+                    self.print_msg(True, "")
 
             except Exception:
                 print(traceback.format_exc())
